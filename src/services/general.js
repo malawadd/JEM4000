@@ -1,8 +1,8 @@
 export const formatBytes = (bytes, decimals = 2) => {
-	if (!+bytes) return "0 Byte"
+	if (!+bytes) return "0 holders"
 
 	const dm = decimals < 0 ? 0 : decimals
-	const sizes = ["Bytes", "KB", "M", "B", "T", "P"]
+	const sizes = ["s", "K", "M", "G", "T", "P"]
 
 	const i = Math.floor(Math.log(bytes) / Math.log(1024))
 

@@ -39,12 +39,13 @@ export const fetchThxByHeight = async ({ block, to, type, rejected = false, ps =
                 'x-api-key': `FMhzdrfPUr5fK5JqtFV3Z50yP8sxWnUm5TPxtQJq`, // Add your token here
             },
         })
-        
-        const data = await response.json()
-        
-        // Return the hash of the first transaction if available
+
+        const data = await fetch(url.href).then((r) => r.json())
+		return data
+       
+    
 		console.log(data)
-        return data.items.length > 0 ? data.items[0].hash : null
+        return response
     } catch (error) {
         console.error(error)
         return null

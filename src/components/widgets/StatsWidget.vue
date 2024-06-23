@@ -78,13 +78,7 @@ watch(
 				</Flex>
 			</Flex>
 
-			<Flex align="center" justify="between" :class="$style.bottom">
-				<Text size="13" weight="500" color="tertiary">
-					StarkNet Metrics by <a href="https://celenium.io" target="_blank">Celenium</a>
-				</Text>
-				<Text size="13" weight="500" color="support">Updated {{ DateTime.fromMillis(when).toFormat("T")
-					}}</Text>
-			</Flex>
+
 		</Flex>
 	</Flex>
 </template>

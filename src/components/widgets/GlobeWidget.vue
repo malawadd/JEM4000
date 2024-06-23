@@ -25,57 +25,75 @@ const appStore = useAppStore()
 const globeWidgetEl = ref(null)
 
 const txs = ref([])
+const newTxQueue = ref([])
 
-const updateTxs = (newTxHash) => {
-	if (typeof newTxHash === 'string') {
-		if (!txs.value.some(tx => tx.hash === newTxHash)) {
-			console.log("Adding new transaction hash:", newTxHash)
-			txs.value.push({ hash: newTxHash })
-		}
-	} else {
-		console.log("newTxHash is not a string:", newTxHash)
-	}
+const updateTxs = (newTxs) => {
+    if (Array.isArray(newTxs)) {
+        newTxs.forEach(newTx => {
+            if (!txs.value.some(tx => tx.hash === newTx.hash)) {
+                console.log("Queueing new transaction hash:", newTx.hash)
+                newTxQueue.value.push(newTx)
+            }
+        })
+    } else {
+        console.log("newTxs is not an array:", newTxs)
+    }
+}
+
+const processQueue = () => {
+    if (newTxQueue.value.length > 0) {
+        const tx = newTxQueue.value.shift()
+        console.log("Adding new transaction hash from queue:", tx.hash)
+        txs.value.push(tx)
+    }
 }
 
 const fetchAndCompareTxs = async () => {
-	try {
-		const newTxHash = await fetchThxByHeight({})
-		console.log("Fetched transaction hash:", newTxHash)
-		updateTxs(newTxHash)
-	} catch (error) {
-		console.error("Error fetching transactions:", error)
-	}
+    try {
+        const response = await fetchThxByHeight({})
+        console.log("Fetched transactions response:", response)
+        updateTxs(response.items)
+    } catch (error) {
+        console.error("Error fetching transactions:", error)
+    }
 }
 
 const startPolling = () => {
-	console.log("Starting polling every 60 seconds")
-	setInterval(fetchAndCompareTxs, 30_000)
+    console.log("Starting polling every 30 seconds")
+    setInterval(fetchAndCompareTxs, 30_000)
+}
+
+const startQueueProcessing = () => {
+    console.log("Starting queue processing every 3 seconds")
+    setInterval(processQueue, 3_000)
 }
 
 onMounted(async () => {
-	await fetchAndCompareTxs() // Start polling immediately on mount
-	startPolling() // Then start polling every 30 seconds
+    await fetchAndCompareTxs() // Start polling immediately on mount
+    startPolling() // Then start polling every 30 seconds
+    startQueueProcessing() // Start processing the queue every 3 seconds
 })
 
 watch(
-	() => appStore.head,
-	async () => {
-		if (txs.value.length) return
+    () => appStore.head,
+    async () => {
+        if (txs.value.length) return
 
-		const newTxHash = await fetchThxByHeight({
-			height: appStore.head.last_height,
-			from: parseInt(DateTime.fromISO(appStore.head.last_time) / 1000),
-		})
-		console.log("Fetched transaction hash based on appStore.head:", newTxHash)
-		updateTxs(newTxHash)
-	},
+        const newTxs = await fetchThxByHeight({
+            height: appStore.head.last_height,
+            from: parseInt(DateTime.fromISO(appStore.head.last_time) / 1000),
+        })
+        console.log("Fetched transactions based on appStore.head:", newTxs)
+        updateTxs(newTxs)
+    },
 )
 
 watch(
-	() => appStore.network,
-	() => {
-		txs.value = []
-	},
+    () => appStore.network,
+    () => {
+        txs.value = []
+        newTxQueue.value = []
+    },
 )
 </script>
 
