@@ -51,6 +51,19 @@ const PROPAGATION_SPEED = 2
 const NUM_RINGS = 2
 const CLEAR_DELAY = 300_000 // 5 minutes
 
+const formatGasFee = (gasFee) => {
+	const units = ["wei", "Kwei", "Mwei", "Gwei", "microether", "milliether", "ether"]
+	let unitIndex = 0
+	let readableFee = gasFee
+
+	while (readableFee >= 1000 && unitIndex < units.length - 1) {
+		readableFee /= 1000
+		unitIndex++
+	}
+
+	return `${readableFee.toFixed(2)} ${units[unitIndex]}`
+}
+
 const getIcon = () => {}
 
 onMounted(() => {
@@ -62,6 +75,7 @@ onMounted(() => {
 		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill-rule="evenodd" d="$ICON" clip-rule="evenodd"/></svg>
 		<div class=${cssModule.content}>
 			<div class=${cssModule.title}> New Transaction <div>$HASH</div></div>
+			<div class=${cssModule.subtitle}> Gas Fee: $GASFEE</div>
 		</div>
 	</div>`
 
@@ -92,6 +106,7 @@ onMounted(() => {
 		.htmlElement((d) => {
 			const el = document.createElement("div")
 			let popup = markerSvg.replace("$HASH", `${d.tx.hash.slice(0, 4)}...${d.tx.hash.slice(-4)}`)
+			popup = popup.replace("$GASFEE", formatGasFee(d.tx.actualFee))
 			el.innerHTML = popup
 
 			return el
@@ -222,6 +237,7 @@ const onResize = () => {
   renderers.forEach((r) => r.setSize(parentClientRect.value.width, parentClientRect.value.height))
 }
 </script>
+
 
 
 
