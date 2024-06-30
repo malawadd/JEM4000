@@ -31,19 +31,19 @@ const updateTxs = (newTxs) => {
     if (Array.isArray(newTxs)) {
         newTxs.forEach(newTx => {
             if (!txs.value.some(tx => tx.hash === newTx.hash)) {
-                console.log("Queueing new transaction hash:", newTx.hash)
+               // console.log("Queueing new transaction hash:", newTx.hash)
                 newTxQueue.value.push(newTx)
             }
         })
     } else {
-        console.log("newTxs is not an array:", newTxs)
+       // console.log("newTxs is not an array:", newTxs)
     }
 }
 
 const processQueue = () => {
     if (newTxQueue.value.length > 0) {
         const tx = newTxQueue.value.shift()
-        console.log("Adding new transaction hash from queue:", tx.hash)
+       // console.log("Adding new transaction hash from queue:", tx.hash)
         txs.value.push(tx)
     }
 }
@@ -51,7 +51,7 @@ const processQueue = () => {
 const fetchAndCompareTxs = async () => {
     try {
         const response = await fetchThxByHeight({})
-        console.log("Fetched transactions response:", response)
+       // console.log("Fetched transactions response:", response)
         updateTxs(response.items)
     } catch (error) {
         console.error("Error fetching transactions:", error)
@@ -59,12 +59,12 @@ const fetchAndCompareTxs = async () => {
 }
 
 const startPolling = () => {
-    console.log("Starting polling every 30 seconds")
+   // console.log("Starting polling every 30 seconds")
     setInterval(fetchAndCompareTxs, 30_000)
 }
 
 const startQueueProcessing = () => {
-    console.log("Starting queue processing every 3 seconds")
+   // console.log("Starting queue processing every 3 seconds")
     setInterval(processQueue, 3_000)
 }
 
@@ -83,7 +83,7 @@ watch(
             height: appStore.head.last_height,
             from: parseInt(DateTime.fromISO(appStore.head.last_time) / 1000),
         })
-        console.log("Fetched transactions based on appStore.head:", newTxs)
+       // console.log("Fetched transactions based on appStore.head:", newTxs)
         updateTxs(newTxs)
     },
 )

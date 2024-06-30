@@ -2,12 +2,16 @@
 /** Components */
 import GlobeWidget from "@/components/widgets/GlobeWidget.vue"
 import ActiveRollupsWidget from "@/components/widgets/ActiveRollupsWidget.vue"
+import CelestiaPriceWidget from "@/components/widgets/CelestiaPriceWidget.vue"
 </script>
 
 <template>
 	<Flex gap="20" :class="$style.wrapper">
 		<Flex direction="column" gap="20" :class="$style.left_column">
 			<GlobeWidget />
+			<Flex gap="20" :class="$style.bottom">
+				<CelestiaPriceWidget />
+			</Flex>
 
 
 		</Flex>

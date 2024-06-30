@@ -49,7 +49,7 @@ const TS = 1500
 const MAX_RADIUS = 5
 const PROPAGATION_SPEED = 2
 const NUM_RINGS = 2
-const CLEAR_DELAY = 300_000 // 5 minutes
+const CLEAR_DELAY = 30_000 // 5 minutes
 
 const formatGasFee = (gasFee) => {
 	const units = ["wei", "Kwei", "Mwei", "Gwei", "microether", "milliether", "ether"]
@@ -170,7 +170,7 @@ onBeforeUnmount(() => {
 watch(
   () => props.txs,
   (newTxs) => {
-    console.log("New transactions:", newTxs)
+    // console.log("New transactions:", newTxs)
     newTxs.forEach((tx) => {
       if (!displayedTxs.value.has(tx.hash)) {
         displayedTxs.value.add(tx.hash)
