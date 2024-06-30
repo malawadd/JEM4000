@@ -9,9 +9,9 @@ import TransactionSimulator from "@/components/widgets/TransactionSimulator.vue"
 	<Flex gap="20" :class="$style.wrapper">
 		<Flex direction="column" gap="20" :class="$style.left_column">
 			<GlobeWidget />
-			<Flex gap="20" :class="$style.bottom">
+			<!-- <Flex gap="20" :class="$style.bottom">
 				<TransactionSimulator />
-			</Flex>
+			</Flex> -->
 
 
 		</Flex>
