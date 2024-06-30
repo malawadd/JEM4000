@@ -1,6 +1,6 @@
 <template>
 	<Flex direction="column" justify="between" gap="16" :class="$style.wrapper">
-		<Flex wide justify="between" align="center">
+		<Flex wide justify="between" align="left">
 			<div :class="$style.container">
 				<button :class="$style.styledButton" @click="simulateTransaction">
 					Simulate Transaction
@@ -82,7 +82,7 @@ watch(txHash, (newTxHash) => {
 .container {
 	flex: 1;
 	display: flex;
-	justify-content: center;
+	justify-content: flex-start;
 }
 
 .styledButton {

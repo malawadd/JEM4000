@@ -1,5 +1,5 @@
 import { runAgentWithPrompt } from './aiService';
-import { getGroqChatCompletion } from "./groqService"
+import { getGroqChatCompletion } from "./groqService";
 
 export const fetchTransactionAndSimulate = async (txHash) => {
     try {
@@ -61,7 +61,7 @@ export const fetchTransactionAndSimulate = async (txHash) => {
         };
 
         // Function to simulate the transaction with the fetched details
-        const simulateTransaction = async (transactionDetails, currentNonce) => {
+        const simulateTransaction = async (transactionDetails, nonce) => {
             console.log('Simulating transaction with details:', transactionDetails);
 
             const {
@@ -73,7 +73,7 @@ export const fetchTransactionAndSimulate = async (txHash) => {
                 signature
             } = transactionDetails;
 
-            const incrementedNonce = (parseInt(currentNonce, 16) + 1).toString(16);
+            const incrementedNonce = (parseInt(nonce, 16) + 1).toString(16);
             const formattedNonce = '0x' + incrementedNonce.padStart(64, '0');
 
             const body = {
@@ -120,22 +120,33 @@ export const fetchTransactionAndSimulate = async (txHash) => {
         }
 
         // Fetch the current nonce for the account
-        const currentNonce = await fetchCurrentNonce(transactionDetails.sender_address);
+        let currentNonce = await fetchCurrentNonce(transactionDetails.sender_address);
 
-        // Simulate the transaction
-        const simulationResult = await simulateTransaction(transactionDetails, currentNonce);
+        // Function to handle simulation with retries
+        const handleSimulation = async (transactionDetails, nonce) => {
+            try {
+                let simulationResult = await simulateTransaction(transactionDetails, nonce);
 
-         // Check for the specific error related to invalid nonce
-         if (simulationResult.execution_error && simulationResult.execution_error.includes("Invalid transaction nonce")) {
-            const correctNonceMatch = simulationResult.execution_error.match(/Account nonce: Nonce\(StarkFelt\("0x([0-9a-fA-F]+)"\)\)/);
-            if (correctNonceMatch) {
-                const correctNonce = '0x' + correctNonceMatch[1];
-                console.log(`Retrying simulation with corrected nonce: ${correctNonce}`);
-                simulationResult = await simulateTransaction(transactionDetails, correctNonce);
+                // Check for the specific error related to invalid nonce
+                if (simulationResult.execution_error && simulationResult.execution_error.includes("Invalid transaction nonce")) {
+                    const correctNonceMatch = simulationResult.execution_error.match(/Account nonce: Nonce\(StarkFelt\("0x([0-9a-fA-F]+)"\)\)/);
+                    if (correctNonceMatch) {
+                        const correctNonce = '0x' + correctNonceMatch[1];
+                        console.log(`Retrying simulation with corrected nonce: ${correctNonce}`);
+                        simulationResult = await simulateTransaction(transactionDetails, correctNonce);
+                    }
+                }
+
+                return simulationResult;
+            } catch (error) {
+                console.error('Error during simulation:', error);
+                throw error;
             }
-        }
-       
-        
+        };
+
+        // Perform simulation with possible retries
+        const simulationResult = await handleSimulation(transactionDetails, currentNonce);
+
         const aiResponse = await getGroqChatCompletion(JSON.stringify(simulationResult));
         console.log('AI response:', aiResponse);
 

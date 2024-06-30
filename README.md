@@ -69,6 +69,28 @@ JEM-4000 transforms complex blockchain data into an accessible and interactive e
 
 Through this sophisticated blend of technologies, the StarkNet Transaction Visualizer offers users an engaging and informative way to monitor blockchain activities, making complex data comprehensible and visually compelling.
 
+
+### Transaction Fetch and Simulation
+
+The `fetchTransactionAndSimulate` function is designed to fetch the details of a specific transaction, and simulate it. Here’s a breakdown of its functionality:
+
+1. **Transaction Details Fetching:**
+   - The function starts by fetching the transaction details from the StarkNet blockchain using the transaction hash. This is done via an API call to the Nethermind RPC endpoint.
+
+2. **Nonce Fetching:**
+   - It then fetches the current nonce for the account involved in the transaction to ensure the simulation uses the most accurate nonce.
+
+3. **Transaction Simulation:**
+   - The function simulates the transaction using the fetched details and current nonce. If a nonce error occurs, it extracts the correct nonce from the error message and retries the simulation with the corrected nonce.
+
+4. **Error Handling:**
+   - The function includes robust error handling to manage issues that may arise during the fetch and simulation processes.
+
+5. **AI Integration:**
+   - After successfully simulating the transaction, the result is passed to an AI service (Groq) for further processing and analysis.
+
+This ensures that the transaction simulation is accurate and handles common issues related to nonce mismatches effectively.
+
 ### How To Use
 
 1. Run `npm install` to install the required packages.
@@ -84,6 +106,7 @@ Through this sophisticated blend of technologies, the StarkNet Transaction Visua
 - **Luxon:** Library for working with dates and times.
 - **uuid:** Library for generating unique identifiers.
 - **Vue Router:** Official router for Vue.js.
+- **Groq:** AI service for processing and analyzing simulated transaction results.
 
 ### Credits
 
@@ -91,4 +114,5 @@ Through this sophisticated blend of technologies, the StarkNet Transaction Visua
 - **Three.js and three-globe:** For the 3D visualization tools.
 - **D3.js:** For the data visualization capabilities.
 - **Vue 3 and Pinia:** For the framework and state management.
+- **Groq API:** For AI simulation responses and analysis.
 - **@vvuwei** and **@xdeq**
